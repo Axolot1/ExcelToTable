@@ -1,0 +1,91 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 缩小表格的字体大小 */
+.print-table {
+  font-size: 12px;
+  table-layout: fixed; /* 固定表格布局 */
+  width: 100%; /* 设置表格宽度为100% */
+}
+
+/* 确保表格单元格中的空白被正确渲染 */
+.print-table td {
+  white-space: pre;
+  white-space: pre-wrap; /* 允许自动换行 */
+  overflow-wrap: break-word; /* 自动换行 */
+  word-break: break-all; /* 强制单词断行 */
+}
+
+/* 仅设置材料表格尺寸列左对齐 */
+.materials-table td:nth-child(2),
+.materials-table th:nth-child(2) {
+  text-align: left;
+}
+
+/* 设置型材表格特定列宽度比例 */
+.materials-table th:nth-child(1),
+.materials-table td:nth-child(1) {
+  width: 22%; /* 1 */
+}
+
+.materials-table th:nth-child(2),
+.materials-table td:nth-child(2) {
+  width: 66%; /* 7 */
+}
+
+.materials-table th:nth-child(3),
+.materials-table td:nth-child(3) {
+  width: 12%; /* 2 */
+}
+
+/* 打印样式 */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+  }
+  .print-table {
+    font-size: 10px; /* 打印时进一步缩小字体 */
+    width: 100%; /* 打印时表格宽度为100% */
+  }
+  h1,
+  .ml-2,
+  input[type="file"] {
+    display: none !important; /* 隐藏打印按钮和文件输入框 */
+  }
+}
