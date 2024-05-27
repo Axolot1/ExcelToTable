@@ -16,6 +16,8 @@ function parseAndAddDimensions(order) {
 const ExcelReader = () => {
   const [customerName, setCustomerName] = useState("");
   const [seriesNames, setSeriesNames] = useState([]);
+  const [orderSum, setOrderSum] = useState(0);
+  const [totalArea, setTotalArea] = useState("");
   const [orders, setOrders] = useState([]);
   const [materials, setMaterials] = useState([]);
   const tableRef = useRef();
@@ -28,15 +30,6 @@ const ExcelReader = () => {
     const materials = [];
 
     let currentOrders = [];
-    // 判断是否为型材行的正则表达式
-    const materialRegex = /^[^,]+\/[^,]+\/$/;
-
-    // 判断是否是型材行的辅助函数
-    function isMaterialLine(line) {
-      // 使用正则表达式判断第一个单元格是否符合"型材名/型号/"的模式
-      const parts = line.split(",").filter((part) => part.trim() !== "");
-      return parts.length > 0 && materialRegex.test(parts[0]);
-    }
 
     lines.forEach((line) => {
       const parts = line.split(",,,,");
@@ -47,6 +40,8 @@ const ExcelReader = () => {
           return { [key.trim()]: value.trim() };
         });
         orders.push(...currentOrders);
+      } else if (line.startsWith("总面积")) {
+        setTotalArea(parts[0].split(",")[1]);
       } else if (isMaterialLine(line)) {
         // 处理型材信息行
         const materialParts = line
@@ -93,6 +88,31 @@ const ExcelReader = () => {
 
     return { orders, materials };
   };
+  // 判断是否是型材行的辅助函数
+  function isMaterialLine(line) {
+    // 判断是否为型材行的正则表达式
+    const materialRegex = /^[^,]+\/[^,]+\/$/;
+    // 使用正则表达式判断第一个单元格是否符合"型材名/型号/"的模式
+    const parts = line.split(",").filter((part) => part.trim() !== "");
+    return parts.length > 0 && materialRegex.test(parts[0]);
+  }
+
+  const aggregateOrders = (orders) => {
+    const orderMap = new Map();
+
+    orders.forEach((order) => {
+      const orderKey = `${order.尺寸}-${order.系列名称}`; // 组合尺寸和系列名称作为唯一键
+      if (orderMap.has(orderKey)) {
+        const existingOrder = orderMap.get(orderKey);
+        existingOrder.数量 =
+          parseInt(existingOrder.数量, 10) + parseInt(order.数量, 10);
+      } else {
+        orderMap.set(orderKey, { ...order });
+      }
+    });
+
+    return Array.from(orderMap.values());
+  };
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -105,8 +125,13 @@ const ExcelReader = () => {
       let data = XLSX.utils.sheet_to_json(ws, { header: 1 });
 
       const { orders, materials } = parseData(data);
-
-      setOrders(orders);
+      const aggregatedOrders = aggregateOrders(orders);
+      const orderSum = aggregatedOrders.reduce(
+        (pre, cur) => (pre += Number(cur.数量)),
+        0
+      );
+      setOrderSum(orderSum);
+      setOrders(aggregatedOrders);
       setMaterials(materials);
     };
     reader.readAsBinaryString(file);
@@ -129,6 +154,11 @@ const ExcelReader = () => {
     window.print();
   };
 
+  // 将订单等分为两部分
+  const halfIndex = Math.ceil(orders.length / 2);
+  const firstHalfOrders = orders.slice(0, halfIndex);
+  const secondHalfOrders = orders.slice(halfIndex);
+
   return (
     <Container ref={tableRef}>
       <Row className="my-3">
@@ -140,28 +170,58 @@ const ExcelReader = () => {
         </Col>
       </Row>
       <Row>
-        <h4>
-          客户: {customerName} <span style={{ margin: "0 30px" }}></span>
-          <span /> 系列: {seriesNames.join(", ")}
-        </h4>
-        <Col>
+        <Col md={4}>客户: {customerName}</Col>
+        <Col md={4}>面积: {totalArea}平方</Col>
+        <Col md={4}>个数: {orderSum}</Col>
+      </Row>
+      <hr />
+      <Row>
+        <Col className="text-end">系列: {seriesNames.join(", ")}</Col>
+      </Row>
+      <hr />
+      <Row>
+        <Col md={6}>
           <Table striped bordered hover className="print-table">
             <thead>
               <tr>
                 <th>宽度</th>
                 <th>高度</th>
                 <th>数量</th>
-                <th>系列名称</th>
+                {/* <th>系列名称</th> */}
                 <th>备注</th>
               </tr>
             </thead>
             <tbody>
-              {orders.map((order, index) => (
+              {firstHalfOrders.map((order, index) => (
                 <tr key={index}>
                   <td>{order.宽度}</td>
                   <td>{order.高度}</td>
                   <td>{order.数量}</td>
-                  <td>{order.系列名称}</td>
+                  {/* <td>{order.系列名称}</td> */}
+                  <td>{order.备注}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Col>
+        <Col md={6}>
+          <Table striped bordered hover className="print-table">
+            <thead>
+              <tr>
+                <th>宽度</th>
+                <th>高度</th>
+                <th>数量</th>
+                {/* <th>系列名称</th> */}
+                <th>备注</th>
+              </tr>
+            </thead>
+            <tbody>
+              {secondHalfOrders.map((order, index) => (
+                <tr key={index}>
+                  <td>{order.宽度}</td>
+                  <td>{order.高度}</td>
+                  <td>{order.数量}</td>
+                  {/* <td>{order.系列名称}</td> */}
                   <td>{order.备注}</td>
                 </tr>
               ))}

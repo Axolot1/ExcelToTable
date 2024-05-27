@@ -61,12 +61,12 @@
 /* 设置型材表格特定列宽度比例 */
 .materials-table th:nth-child(1),
 .materials-table td:nth-child(1) {
-  width: 22%; /* 1 */
+  width: 15%; /* 1 */
 }
 
 .materials-table th:nth-child(2),
 .materials-table td:nth-child(2) {
-  width: 66%; /* 7 */
+  width: 73%; /* 7 */
 }
 
 .materials-table th:nth-child(3),
@@ -81,7 +81,7 @@
   }
   .print-table {
     font-size: 10px; /* 打印时进一步缩小字体 */
-    width: 100%; /* 打印时表格宽度为100% */
+    width: 1400px; /* 打印时表格宽度为100% */
   }
   h1,
   .ml-2,
