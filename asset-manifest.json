@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/ExcelToTable/static/css/main.baafb70c.css",
-    "main.js": "/ExcelToTable/static/js/main.ca4108ab.js",
+    "main.css": "/ExcelToTable/static/css/main.a71292a1.css",
+    "main.js": "/ExcelToTable/static/js/main.b2ca0483.js",
     "static/js/453.1835e334.chunk.js": "/ExcelToTable/static/js/453.1835e334.chunk.js",
     "index.html": "/ExcelToTable/index.html",
-    "main.baafb70c.css.map": "/ExcelToTable/static/css/main.baafb70c.css.map",
-    "main.ca4108ab.js.map": "/ExcelToTable/static/js/main.ca4108ab.js.map",
+    "main.a71292a1.css.map": "/ExcelToTable/static/css/main.a71292a1.css.map",
+    "main.b2ca0483.js.map": "/ExcelToTable/static/js/main.b2ca0483.js.map",
     "453.1835e334.chunk.js.map": "/ExcelToTable/static/js/453.1835e334.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.baafb70c.css",
-    "static/js/main.ca4108ab.js"
+    "static/css/main.a71292a1.css",
+    "static/js/main.b2ca0483.js"
   ]
 }
