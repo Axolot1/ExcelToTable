@@ -52,6 +52,11 @@
   word-break: break-all; /* 强制单词断行 */
 }
 
+/* 自定义单元格行间距 */
+.custom-cell {
+  line-height: 2; /* 设置你想要的行间距 */
+}
+
 /* 仅设置材料表格尺寸列左对齐 */
 .materials-table td:nth-child(2),
 .materials-table th:nth-child(2) {
@@ -74,6 +79,10 @@
   width: 12%; /* 2 */
 }
 
+.font-medium {
+  font-size: 14px;
+}
+
 /* 打印样式 */
 @media print {
   body {
@@ -83,9 +92,7 @@
     font-size: 10px; /* 打印时进一步缩小字体 */
     width: 1400px; /* 打印时表格宽度为100% */
   }
-  h1,
-  .ml-2,
-  input[type="file"] {
+  .no-print {
     display: none !important; /* 隐藏打印按钮和文件输入框 */
   }
 }

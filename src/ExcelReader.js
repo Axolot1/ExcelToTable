@@ -1,8 +1,25 @@
 import React, { useState, useRef } from "react";
 import * as XLSX from "xlsx";
-import { Table, Container, Row, Col, Button } from "react-bootstrap";
+import { Table, Container, Row, Col, Button, Form } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css"; // 引入CSS文件
+
+const outerFrameKeywords = [
+  "边封",
+  "上固",
+  "固上滑",
+  "下滑",
+  "中并",
+  "转角",
+  "平上滑",
+  "扣片",
+  "双开口",
+  "外框",
+  "中挺",
+  "固定压线",
+  "反盖板",
+  "中柱",
+];
 
 // 解析尺寸并添加宽高属性的辅助函数
 function parseAndAddDimensions(order) {
@@ -13,6 +30,27 @@ function parseAndAddDimensions(order) {
   }
 }
 
+const filterMaterials = (materials, filter) => {
+  if (filter === "框加页") {
+    return materials;
+  }
+
+  if (filter === "外框") {
+    return materials.filter((material) =>
+      outerFrameKeywords.some((keyword) => material.型材.includes(keyword))
+    );
+  }
+
+  if (filter === "内页") {
+    return materials.filter(
+      (material) =>
+        !outerFrameKeywords.some((keyword) => material.型材.includes(keyword))
+    );
+  }
+
+  return materials;
+};
+
 const ExcelReader = () => {
   const [customerName, setCustomerName] = useState("");
   const [seriesNames, setSeriesNames] = useState([]);
@@ -21,6 +59,7 @@ const ExcelReader = () => {
   const [orders, setOrders] = useState([]);
   const [materials, setMaterials] = useState([]);
   const tableRef = useRef();
+  const [radioValue, setRadioValue] = useState("外框");
 
   const parseData = (data) => {
     // 先用,连接所有单元格，然后用,,,,区分每组信息
@@ -146,7 +185,10 @@ const ExcelReader = () => {
         const lengthB = parseInt(b.split("=")[0].replace(/<[^>]+>/g, ""), 10);
         return lengthB - lengthA;
       })
-      .map((pair) => `<span style="white-space: nowrap;">${pair.trim()}</span>`)
+      .map(
+        (pair) =>
+          `<span style="white-space: nowrap; font-size:13px">${pair.trim()}</span>`
+      )
       .join("          ");
   };
 
@@ -161,15 +203,53 @@ const ExcelReader = () => {
 
   return (
     <Container ref={tableRef}>
-      <Row className="my-3">
+      <Row className="my-4 no-print">
         <Col>
           <input type="file" onChange={handleFileUpload} />
+        </Col>
+        <Col>
+          <Form>
+            <div className="mb-3">
+              <Form.Check
+                inline
+                label="外框"
+                type="radio"
+                id="radio-outer"
+                name="frameOptions"
+                value="外框"
+                checked={radioValue === "外框"}
+                onChange={(e) => setRadioValue(e.target.value)}
+              />
+              <Form.Check
+                inline
+                label="内页"
+                type="radio"
+                id="radio-inner"
+                name="frameOptions"
+                value="内页"
+                checked={radioValue === "内页"}
+                onChange={(e) => setRadioValue(e.target.value)}
+              />
+              <Form.Check
+                inline
+                label="框加页"
+                type="radio"
+                id="radio-both"
+                name="frameOptions"
+                value="框加页"
+                checked={radioValue === "框加页"}
+                onChange={(e) => setRadioValue(e.target.value)}
+              />
+            </div>
+          </Form>
+        </Col>
+        <Col>
           <Button onClick={handlePrint} className="ml-2">
             Print
           </Button>
         </Col>
       </Row>
-      <Row>
+      <Row className="my-4">
         <Col md={4}>客户: {customerName}</Col>
         <Col md={4}>面积: {totalArea}平方</Col>
         <Col md={4}>个数: {orderSum}</Col>
@@ -245,10 +325,13 @@ const ExcelReader = () => {
               </tr>
             </thead>
             <tbody>
-              {materials.map((material, index) => (
+              {filterMaterials(materials, radioValue).map((material, index) => (
                 <tr key={index}>
                   <td>{material.型材}</td>
-                  <td dangerouslySetInnerHTML={{ __html: material.尺寸 }}></td>
+                  <td
+                    className="custom-cell"
+                    dangerouslySetInnerHTML={{ __html: material.尺寸 }}
+                  ></td>
                   <td>{material.总长}</td>
                 </tr>
               ))}
