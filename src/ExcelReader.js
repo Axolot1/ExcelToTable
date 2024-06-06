@@ -260,8 +260,8 @@ const ExcelReader = () => {
       </Row>
       <hr />
       <Row>
-        <Col md={6}>
-          <Table striped bordered hover className="print-table">
+        <Col className="col-print">
+          <Table striped bordered hover className="size-table">
             <thead>
               <tr>
                 <th>宽度</th>
@@ -284,8 +284,8 @@ const ExcelReader = () => {
             </tbody>
           </Table>
         </Col>
-        <Col md={6}>
-          <Table striped bordered hover className="print-table">
+        <Col className="col-print">
+          <Table striped bordered hover className="size-table">
             <thead>
               <tr>
                 <th>宽度</th>
